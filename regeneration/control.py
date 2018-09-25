@@ -1,9 +1,9 @@
 '''
 @created: 13:17 (EST) Sun 07/29/2018
 
-@last_modified: 15:11 (EST) Sun 08/11/2018
+@last_modified: 10:04 (EST) Sun 09/25/2018
 
-@authors:
+@authors: 
 
 @institution: Open-Source Mathematical Biology Intiative (OSMBI)
 
@@ -14,7 +14,9 @@ engine.py and visuals.py, alongside a possible network class to control
 and complete the models explored in the HRILab's papers on tissue regeneration.
 '''
 
-from engine import * 
+from engine import *
+from visuals import*
+from time import sleep
 
 if __name__ == "__main__":
   
@@ -27,10 +29,15 @@ if __name__ == "__main__":
   # Add agents to board
   for c in coords:
     b.addAgent(c)
+    
+  # Initialize plotting
+  fig,ax = init_plot()
   
   # Cycle program
   while True:
     for i in b.getAllAgents():
       sense(b,i,3,4,0.5)
       act(b,i)
-      
+      iter_plot(b,fig,ax)
+      break
+    break
