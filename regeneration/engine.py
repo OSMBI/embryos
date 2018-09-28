@@ -1,7 +1,7 @@
 '''
 @created: 13:17 (EST) Sun 07/29/2018
 
-@last_modified: 15:08 (EST) Sun 08/11/2018
+@last_modified: 07:10 (EST) Sun 09/28/2018
 
 @authors: 
 
@@ -25,6 +25,10 @@ def tuple_add(a,b):
 
 #camelCase XOR underscores boys!
 class board_engine:
+    relatives = [(1,0,0),(-1,0,0),(0,1,0),
+                 (0,-1,0),(0,0,1),(0,0,-1),
+                 (1,-1,0),(-1,1,0),(1,0,-1),
+                 (-1,0,1),(0,1,-1),(0,-1,1)]
 #container class that handles the coordinate system and has an overview over each agent and its position.
     def __init__(self,BOARD_SIZE_X,BOARD_SIZE_Y,BOARD_SIZE_Z):
         BOARD_SIZE_X = 500 # just an arbitrary number I set, may have to be higher. 
@@ -43,13 +47,8 @@ class board_engine:
     
     # Returns the list of coordinates that are neighbouring the given position
     # Note: This does not check for overflow because of limited board size yet
-    def getNeighbouringCoordinates(self,position):
-        relatives = [(1,0,0),(-1,0,0),(0,1,0),
-                     (0,-1,0),(0,0,1),(0,0,-1),
-                     (1,-1,0),(-1,1,0),(1,0,-1),
-                     (-1,0,1),(0,1,-1),(0,-1,1)]
-                
-        return [tuple_add(position,rel) for rel in relatives] #if self.board[tuple_add(position,rel)] != None]
+    def getNeighbouringCoordinates(self,position):                
+        return [tuple_add(position,rel) for rel in self.relatives] #if self.board[tuple_add(position,rel)] != None]
         
     # Returns the list of neighbouring agents from a given position
     def getNeighbouringAgents(self,position):
@@ -84,15 +83,15 @@ class board_engine:
         return valid_neighbors[randint(0,len(valid_neighbors))].i_id
 
 class agent:
-    ReceivedPackets = [] #list of packets recived from neighbors
-    HeldPackets = [] #list of packets cell is holding 
-    sendingPackets = [] #list of packets cell is sending
     
     def __init__(self,pos):
         self.i_id = (pos[0],pos[1],pos[2]) #cell position in board
-        
+        self.ReceivedPackets = [] #list of packets recived from neighbors
+        self.HeldPackets = [] #list of packets cell is holding 
+        self.sendingPackets = [] #list of packets cell is sending
+    
     def __str__(self):
-        return "Agent located at %s" % self.i_id #nice string to print
+        return "Agent located at %s" % str(self.i_id) #nice string to print
 
 class Packet:
     # Communication packet that is sent between cells to statistically save structural information
@@ -103,7 +102,7 @@ class Packet:
     backtracking = False
     
     def __init__(self, direction_vector):
-        self.directons.append(direction_vector)
+        self.directions.append(direction_vector)
         
     # Adds a new bend in the packet, i.e. a new direction that is appended after the last one.
     def bend(self, direction_vector):
@@ -122,8 +121,20 @@ class Packet:
         if self.backtracking and self.steps[-1] <= 0:
                 self.steps.pop()
                 self.directions.pop()
-        return [-j if self.backtracking else j for j in self.directions[-1]] # reverses direction if backtracking
-
+        return tuple([-j if self.backtracking else j for j in self.directions[-1]]) # reverses direction if backtracking
+    
+    # Get new random direction different from current direction
+    def getNewDirection(self,board,i_id):
+        
+        #Random direction
+        d = board.relatives[randint(0,11)]
+        
+        #Select a direction that has an agent and is not the original direction
+        while self.getDirection() == d and board.getAgentAtPosition(tuple_add(i_id,d)) == None:
+            d = board.relatives[randint(0,11)]
+            
+        return d
+    
     # decrements the amount of steps for the current vector if backtracking or
     # increments it if not
     def step(self):
@@ -133,19 +144,24 @@ class Packet:
             self.steps[-1] += 1
             
     def distance(self):
-      return self.steps[-1]
+        try:
+            return self.steps[-1]
+        except IndexError:
+            return
         
 def sense(board,i,minvec,toplen,bendprob):
     for packetbeta in i.ReceivedPackets:
       top = packetbeta.getDirection() #pop out 
       if not packetbeta.backtracking:
-        top.Distance += 1
+        top = tuple_add(top,top)
       else:
-        if packetbeta.Bends >= minvec and packetbeta.distance > toplen and board.getAgentAtPosition[tuple_add(i.i_id,top.direction)] != None:
+        if packetbeta.Bends >= minvec and packetbeta.distance > toplen and board.getAgentAtPosition(tuple_add(i.i_id,top.direction)) != None:
           i.HeldPackets.append(packetbeta)
+          i.ReceivedPackets.remove(packetbeta)
         elif rand.uniform(0,1) <= bendprob: #returns random var from uniform distribution
           packetbeta.bend(board.getNewDirection(top.direction,i.i_id))
       i.sendingPackets.append(packetbeta)
+      i.ReceivedPackets.remove(packetbeta)
             
 def reverse(beta):
   return [-b for b in beta] #does this make sense in axial? yes.            
@@ -153,10 +169,10 @@ def reverse(beta):
 def act(board,i):
     for packetbeta in i.sendingPackets:
       top = packetbeta.getDirection()
-      if board.getAgentAtPosition[tuple_add(i.i_id,top)] != None: # if the destination neighbor is alive...
+      if board.getAgentAtPosition(tuple_add(i.i_id,top)) != None: # if the destination neighbor is alive...
        # i.sendPacket(top, packetbeta) # send the packet in that direction
-        board.getAgentAtPosition[tuple_add(i.i_id,top)].ReceivedPackets.append(packetbeta)
+        board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
         packetbeta.step()
       else: # if agent at that position isnt alive
-        packetbeta.bend(packetbeta.getNewDirection(board,top.direction,i.i_id))
+        packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
     i.sendingPackets = [] # clears sendingPackets list
