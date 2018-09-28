@@ -34,9 +34,9 @@ class plot3dClass( object ):
         
 #Extract information from board for plotting
 def board_2_coords(board):
-    axial_2_cart = np.array([[3**0.5,(3**0.5)/2.,0.5],
-                             [0,3./2,1/(2*3**0.5)],
-                             [0,0,(2./3)**0.5]])
+    axial_2_cart = np.array([[1,0.5,0.5],
+                            [0,(3**0.5)/2,1/(12**0.5)],
+                            [0,0,(2/3.)**0.5]])
     #cart_2_axial = np.linalg.inv(axial_2_cart)
     
     first = [tuple(np.matmul(axial_2_cart,np.array(c.i_id).T).tolist()+['red'])\
