@@ -1,7 +1,7 @@
 '''
 @created: 13:17 (EST) Sun 07/29/2018
 
-@last_modified: 10:04 (EST) Sun 09/25/2018
+@last_modified: 07:10 (EST) Sun 09/28/2018
 
 @authors: 
 
@@ -16,7 +16,10 @@ and complete the models explored in the HRILab's papers on tissue regeneration.
 
 from engine import *
 from visuals import*
-from time import sleep
+from random import randint, seed
+import matplotlib as mpl
+
+seed(1337)
 
 if __name__ == "__main__":
   
@@ -30,14 +33,26 @@ if __name__ == "__main__":
   for c in coords:
     b.addAgent(c)
     
+  # Add packets to board
+  for i in range(2):
+      #Random position
+      p = (randint(1,3),
+           randint(1,3),
+           randint(1,3))
+      
+      #Random direction
+      d = b.relatives[randint(0,11)]
+      
+      #Assign packet to given agent
+      b.getAgentAtPosition(p).ReceivedPackets.append(Packet(d))
+      
   # Initialize plotting
-  fig,ax = init_plot()
+  mpl.interactive(True)
+  p = plot3dClass()
   
   # Cycle program
-  while True:
+  for j in range(5):
     for i in b.getAllAgents():
       sense(b,i,3,4,0.5)
       act(b,i)
-      iter_plot(b,fig,ax)
-      break
-    break
+  p.drawNow(board_2_coords(b))
