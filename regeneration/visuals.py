@@ -23,6 +23,7 @@ class plot3dClass( object ):
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot( 111, projection='3d' )
         self.surf = self.ax.scatter(1,1,1)
+        plt.axis('equal')
         # plt.draw() maybe you want to see this frame?
 
     def drawNow(self,var):

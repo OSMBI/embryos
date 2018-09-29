@@ -24,10 +24,10 @@ seed(1337)
 if __name__ == "__main__":
   
   # Create 5x5x5 board
-  b = board_engine(5,5,5)
+  b = board_engine(100,100,10)
   
   # Find agents for 3x3x3 organism
-  coords = [(i,j,k) for i in range(1,4) for j in range(1,4) for k in range(1,4)]
+  coords = [(i,j,k) for i in range(1,5) for j in range(1,5) for k in range(1,4)]
   
   # Add agents to board
   for c in coords:
@@ -36,9 +36,9 @@ if __name__ == "__main__":
   # Add packets to board
   for i in range(2):
       #Random position
-      p = (randint(1,3),
-           randint(1,3),
-           randint(1,3))
+      p = (randint(1,4),
+           randint(1,4),
+           randint(1,4))
       
       #Random direction
       d = b.relatives[randint(0,11)]
@@ -51,9 +51,8 @@ if __name__ == "__main__":
   p = plot3dClass()
   
   # Cycle program
-  for j in range(5):
+  for j in range(10):
     for i in b.getAllAgents():
       sense(b,i,3,4,0.5)
       act(b,i)
       p.drawNow(board_2_coords(b))
-      time.sleep(1)
