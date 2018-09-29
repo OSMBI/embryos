@@ -95,13 +95,12 @@ class agent:
 
 class Packet:
     # Communication packet that is sent between cells to statistically save structural information
-
-    directions = []
-    bends = 0
-    steps = []
-    backtracking = False
     
     def __init__(self, direction_vector):
+        self.directions = []
+        self.bends = 0
+        self.steps = [0]
+        self.backtracking = False
         self.directions.append(direction_vector)
         
     # Adds a new bend in the packet, i.e. a new direction that is appended after the last one.
@@ -170,9 +169,12 @@ def act(board,i):
     for packetbeta in i.sendingPackets:
       top = packetbeta.getDirection()
       if board.getAgentAtPosition(tuple_add(i.i_id,top)) != None: # if the destination neighbor is alive...
-       # i.sendPacket(top, packetbeta) # send the packet in that direction
         board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
         packetbeta.step()
       else: # if agent at that position isnt alive
         packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
+        top = packetbeta.getDirection()
+        board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
+        packetbeta.step()
     i.sendingPackets = [] # clears sendingPackets list
+
