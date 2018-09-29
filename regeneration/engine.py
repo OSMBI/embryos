@@ -70,7 +70,6 @@ class board_engine:
     # This generates a new cell/agent at the given position, if there is no agent at that place yet
     def addAgent(self,agentPosition):
         if self.board[agentPosition[0], agentPosition[1], agentPosition[2]] == None:
-            #print(self.getNeighbouringAgents(agentPosition))
             self.board[agentPosition[0], agentPosition[1], agentPosition[2]] = agent(agentPosition)
     
     # Finds new direction for a wayward packet
@@ -127,11 +126,9 @@ class Packet:
         
         #Random direction
         d = board.relatives[randint(0,11)]
-        
         #Select a direction that has an agent and is not the original direction
-        while self.getDirection() == d and board.getAgentAtPosition(tuple_add(i_id,d)) == None:
+        while self.getDirection() == d or board.getAgentAtPosition(tuple_add(i_id,d)) == None:
             d = board.relatives[randint(0,11)]
-            
         return d
     
     # decrements the amount of steps for the current vector if backtracking or
@@ -151,14 +148,12 @@ class Packet:
 def sense(board,i,minvec,toplen,bendprob):
     for packetbeta in i.ReceivedPackets:
       top = packetbeta.getDirection() #pop out 
-      if not packetbeta.backtracking:
-        top = tuple_add(top,top)
-      else:
+      if packetbeta.backtracking:
         if packetbeta.Bends >= minvec and packetbeta.distance > toplen and board.getAgentAtPosition(tuple_add(i.i_id,top.direction)) != None:
           i.HeldPackets.append(packetbeta)
           i.ReceivedPackets.remove(packetbeta)
-        elif rand.uniform(0,1) <= bendprob: #returns random var from uniform distribution
-          packetbeta.bend(board.getNewDirection(top.direction,i.i_id))
+      elif rand.uniform(0,1) <= bendprob: #returns random var from uniform distribution
+        packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
       i.sendingPackets.append(packetbeta)
       i.ReceivedPackets.remove(packetbeta)
             
@@ -177,4 +172,3 @@ def act(board,i):
         board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
         packetbeta.step()
     i.sendingPackets = [] # clears sendingPackets list
-
