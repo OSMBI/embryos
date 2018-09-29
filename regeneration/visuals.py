@@ -23,6 +23,7 @@ class plot3dClass( object ):
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot( 111, projection='3d' )
         self.surf = self.ax.scatter(1,1,1)
+        plt.axis('equal')
         # plt.draw() maybe you want to see this frame?
 
     def drawNow(self,var):
@@ -30,13 +31,12 @@ class plot3dClass( object ):
         self.surf = self.ax.scatter(var[0],var[1],var[2],c=var[3])
         plt.draw()                      # redraw the canvas
         self.fig.canvas.flush_events()
-        time.sleep(1)
         
 #Extract information from board for plotting
 def board_2_coords(board):
-    axial_2_cart = np.array([[3**0.5,(3**0.5)/2.,0.5],
-                             [0,3./2,1/(2*3**0.5)],
-                             [0,0,(2./3)**0.5]])
+    axial_2_cart = np.array([[1,0.5,0.5],
+                            [0,(3**0.5)/2,1/(12**0.5)],
+                            [0,0,(2/3.)**0.5]])
     #cart_2_axial = np.linalg.inv(axial_2_cart)
     
     first = [tuple(np.matmul(axial_2_cart,np.array(c.i_id).T).tolist()+['red'])\
