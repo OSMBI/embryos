@@ -30,7 +30,6 @@ class plot3dClass( object ):
         self.surf = self.ax.scatter(var[0],var[1],var[2],c=var[3])
         plt.draw()                      # redraw the canvas
         self.fig.canvas.flush_events()
-        time.sleep(1)
         
 #Extract information from board for plotting
 def board_2_coords(board):
