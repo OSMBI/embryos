@@ -55,4 +55,5 @@ if __name__ == "__main__":
     for i in b.getAllAgents():
       sense(b,i,3,4,0.5)
       act(b,i)
-  p.drawNow(board_2_coords(b))
+      p.drawNow(board_2_coords(b))
+      time.sleep(1)
