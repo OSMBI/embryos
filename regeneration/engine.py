@@ -1,7 +1,7 @@
 '''
 @created: 13:17 (EST) Sun 07/29/2018
 
-@last_modified: 12:10 (EST) Sat 09/29/2018
+@last_modified: 21:00 (EST) Fri 10/05/2018
 
 @authors: 
 
@@ -11,8 +11,8 @@
 functions used in Algorithms 1 and 2 as described in the paper "dynamic structure discovery
 and repair for 3d cell assemblages (2016)" by Mike Levin et al.
 
-@last_update: engine.py now parses, finishing touches made to allow workable model in
-control.py.
+@last_update: Fixed some bugs that werent apparent until the flatworm actually regenerated.
+Speaking of regenerating function, thars what I added too.
 '''
 
 import numpy as np
@@ -115,10 +115,6 @@ class Packet:
     # Returns top vector on the direction stack or 
     # if the packet is backtracking, return the top vector on the direction stack reversed
     def getDirection(self):
-        # If the packet is backtracking, check if it finished backtracking in that direction and if so, drop the top direction.
-        if self.backtracking and self.steps[-1] <= 0:
-                self.steps.pop()
-                self.directions.pop()
         return tuple([-j if self.backtracking else j for j in self.directions[-1]]) # reverses direction if backtracking
     
     # Get new random direction different from current direction
@@ -127,7 +123,7 @@ class Packet:
         #Random direction
         d = board.relatives[randint(0,11)]
         #Select a direction that has an agent and is not the original direction
-        while self.getDirection() == d or board.getAgentAtPosition(tuple_add(i_id,d)) == None:
+        while (len(self.directions) > 0 and self.getDirection() == d) or board.getAgentAtPosition(tuple_add(i_id,d)) == None:
             d = board.relatives[randint(0,11)]
         return d
     
@@ -147,15 +143,24 @@ class Packet:
         
 def sense(board,i,minvec,toplen,bendprob):
     for packetbeta in i.ReceivedPackets:
-      top = packetbeta.getDirection() #pop out 
-      if packetbeta.backtracking:
-        if packetbeta.Bends >= minvec and packetbeta.distance > toplen and board.getAgentAtPosition(tuple_add(i.i_id,top.direction)) != None:
-          i.HeldPackets.append(packetbeta)
-          i.ReceivedPackets.remove(packetbeta)
+      i.ReceivedPackets.remove(packetbeta)
+      if len(packetbeta.steps) < 1:
+        continue
+      if packetbeta.steps[-1] <= 0 and packetbeta.backtracking:
+        packetbeta.steps.pop()
+        packetbeta.directions.pop()
+      if len(packetbeta.directions) < 1:
+        continue
+      if packetbeta.bends >= minvec and packetbeta.distance > toplen:
+        packetbeta.backtrack()
       elif rand.uniform(0,1) <= bendprob: #returns random var from uniform distribution
         packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
       i.sendingPackets.append(packetbeta)
-      i.ReceivedPackets.remove(packetbeta)
+      
+      
+def newPacket(board, i, packetFreq):
+    for x in range (0, packetFreq):
+        i.sendingPackets.append(Packet(board.relatives[randint(0,11)]))
             
 def reverse(beta):
   return [-b for b in beta] #does this make sense in axial? yes.            
@@ -167,8 +172,18 @@ def act(board,i):
         board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
         packetbeta.step()
       else: # if agent at that position isnt alive
-        packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
-        top = packetbeta.getDirection()
-        board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
-        packetbeta.step()
+        if not packetbeta.backtracking:
+            # added this because occasionally it can happen that a packet is added, cant go in that direction and gets an empty step saved
+            # which causes phantom regeneration
+            if packetbeta.steps[-1]==0:
+                packetbeta.steps.pop()
+                packetbeta.directions.pop()
+            packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
+            top = packetbeta.getDirection()
+            board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
+            packetbeta.step()
+        else:
+            board.addAgent(tuple_add(i.i_id,top))
+            board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
+            packetbeta.step()
     i.sendingPackets = [] # clears sendingPackets list
