@@ -32,11 +32,20 @@ if __name__ == "__main__":
   # Create a board
   b = board_engine(100,100,10)
   
-  blockwidth = 20
-  blocklength = 48
-  coords = [(i-j/2, j-k/2, k) for i in range(0,blockwidth) for j in range(0,blocklength) for k in range(0,4)]
+  # Use this shape for the others
   widths = [2, 5, 6, 9, 10, 13, 14, 17, 18, 19, 16, 15, 12, 11, 10, 11, 12, 13, 14, 15, 14, 15, 14, 15, 14, 15, 14, 15, 14, 13, 12, 13, 12, 11, 10, 11, 10, 9, 8, 9, 8, 7, 6, 5, 4, 3, 2, 0]
-  # Add agents to board
+  
+  # Use this shape for the 2016 paper
+  # widths = [0, 1, 8, 9, 10, 11, 12, 13, 14, 15, 14, 15, 16, 15, 14, 13, 12, 13, 12, 11, 10, 11, 10, 9, 8, 9, 10, 11, 12, 9, 6, 5, 2]
+
+  # Amount of layers the worm has
+  layers = 4
+
+  blockwidth = max(widths)+1
+  blocklength = len(widths)
+  coords = [(i-j/2, j-k/2, k) for i in range(0,blockwidth) for j in range(0,blocklength) for k in range(0,layers)]
+
+  
   for c in coords:
     if (c[0] + (c[1]+1)/2 - blockwidth/2)**2 <= (widths[c[1]]/2)**2 and (widths[c[1]] % 2 == 1 or (c[0] + (c[1]+1)/2 - blockwidth/2) <= (widths[c[1]]/2)-1):
         b.addAgent(c)
@@ -57,7 +66,7 @@ if __name__ == "__main__":
   p.drawNow(board_2_coords(b))
   
   raw_input()
-  cellnumber = 525*4
+  cellnumber = sum(widths)*layers
   for j in range(420):
     livingcells = 0;
     for i in b.getAllAgents():
