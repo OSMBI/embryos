@@ -1,7 +1,7 @@
 '''
 @created: 13:17 (EST) Sun 07/29/2018
 
-@last_modified: 21:00 (EST) Fri 10/05/2018
+@last_modified: 21:00 (EST) Fri 01/09/2019
 
 @authors: 
 
@@ -77,11 +77,11 @@ class board_engine:
     # Finds new direction for a wayward packet
     def getNewDirection(self,direction,i_id): 
         valid_neighbors = self.getFilledCoordinates(i_id)
-        valid_neighbors.pop(direction)
-        valid_neighbors.pop(-direction)
+        if direction != None:
+            valid_neighbors = [d for d in valid_neighbors if d != direction and d!= [-x for x in direction]]
         if len(valid_neighbors) == 0:
-              return direction
-        return valid_neighbors[randint(0,len(valid_neighbors))].i_id
+              return None
+        return tuple_add(valid_neighbors[randint(0,len(valid_neighbors)-1)], [-x for x in i_id])
 
 class agent:
     
@@ -121,17 +121,13 @@ class Packet:
     # Returns top vector on the direction stack or 
     # if the packet is backtracking, return the top vector on the direction stack reversed
     def getDirection(self):
+        if len(self.directions) == 0:
+            return None
         return tuple([-j if self.backtracking else j for j in self.directions[-1]]) # reverses direction if backtracking
     
     # Get new random direction different from current direction
     def getNewDirection(self,board,i_id):
-        
-        #Random direction
-        d = board.relatives[randint(0,11)]
-        #Select a direction that has an agent and is not the original direction
-        while (len(self.directions) > 0 and self.getDirection() == d) or board.getAgentAtPosition(tuple_add(i_id,d)) == None:
-            d = board.relatives[randint(0,11)]
-        return d
+        return board.getNewDirection(self.getDirection(), i_id)
     
     # decrements the amount of steps for the current vector if backtracking or
     # increments it if not
@@ -141,9 +137,10 @@ class Packet:
         else:
             self.steps[-1] += 1
             
+    # Returns the distance travelled with *the current vector*
     def distance(self):
         try:
-            return sum(self.steps)
+            return self.steps[-1]
         except IndexError:
             return
 
@@ -155,7 +152,7 @@ def sense(board,i,minvec,toplen,bendprob):
             packetbeta.steps.pop()
             packetbeta.directions.pop()
             if packetbeta.directions == []:
-                break
+                continue
         if packetbeta.bends >= minvec and packetbeta.distance > toplen:
             packetbeta.backtrack()
         elif rand.uniform(0,1) <= bendprob: #returns random var from uniform distribution
@@ -185,10 +182,11 @@ def act(board,i):
                 if packetbeta.steps[-1]==0:
                     packetbeta.steps.pop()
                     packetbeta.directions.pop()
-                packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
-                top = packetbeta.getDirection()
-                board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
-                packetbeta.step()
+                newdirection = packetbeta.getNewDirection(board, i.i_id)
+                if newdirection != None: # if newdirection is none, we got into a dead end.
+                    packetbeta.bend(newdirection)
+                    board.getAgentAtPosition(tuple_add(i.i_id,newdirection)).ReceivedPackets.append(packetbeta)
+                    packetbeta.step()
             else:
                 board.addAgent(tuple_add(i.i_id,top))
                 board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)

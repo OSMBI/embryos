@@ -72,7 +72,7 @@ if __name__ == "__main__":
             if b.getAgentAtPosition(c) != None:
                 livingcells = livingcells+1
     fractionAlive = livingcells/float(cellnumber)
-    print `livingcells` + "/" + `cellnumber` + "=" + `fractionAlive`
+    print "Step " + `j` + ": " + `livingcells` + "/" + `cellnumber` + "=" + `fractionAlive`
     if fractionAlive < 0.9:
         print "Dead."
         break
