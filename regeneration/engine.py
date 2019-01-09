@@ -55,7 +55,7 @@ class board_engine:
         neighbourCoordinates = self.getNeighbouringCoordinates(position)
         return [self.board[pos[0],pos[1],pos[2]] for pos in neighbourCoordinates if self.board[pos[0],pos[1],pos[2]] != None]
     
-    # Returns all coordinates with agents
+    # Returns all neighbouring coordinates with agents
     def getFilledCoordinates(self,position):
         neighbourCoordinates = self.getNeighbouringCoordinates(position)
         return [pos for pos in neighbourCoordinates if self.board[pos[0],pos[1],pos[2]] != None]
@@ -156,24 +156,30 @@ def sense(board,i,minvec,toplen,bendprob):
         if packetbeta.bends >= minvec and packetbeta.distance > toplen:
             packetbeta.backtrack()
         elif rand.uniform(0,1) <= bendprob: #returns random var from uniform distribution
-            packetbeta.bend(packetbeta.getNewDirection(board,i.i_id))
+            newdir = packetbeta.getNewDirection(board,i.i_id)
+            if newdir != None:
+                packetbeta.bend(newdir)
         i.sendingPackets.append(packetbeta)
 
       
       
 def newPacket(board, i, packetFreq):
+    candidates = board.getFilledCoordinates(i.i_id)
+    if len(candidates) == 0:
+        return
     for x in range (0, packetFreq):
-        i.sendingPackets.append(Packet(board.relatives[randint(0,11)]))
+        i.sendingPackets.append(Packet(tuple_add(candidates[rand.randint(0, len(candidates)-1)], [-x for x in i.i_id])))
             
 def reverse(beta):
   return [-b for b in beta] #does this make sense in axial? yes.            
 
-def act(board,i):
+def act(board,i,livingCells):
     for packetbeta in i.sendingPackets:
         try:
             top = packetbeta.getDirection()
         except:
             print(vars(packetbeta))
+            continue
         if board.getAgentAtPosition(tuple_add(i.i_id,top)) != None: # if the destination neighbor is alive...
             board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
             packetbeta.step()
@@ -191,4 +197,5 @@ def act(board,i):
                 board.addAgent(tuple_add(i.i_id,top))
                 board.getAgentAtPosition(tuple_add(i.i_id,top)).ReceivedPackets.append(packetbeta)
                 packetbeta.step()
+                livingCells += 1
     i.sendingPackets = [] # clears sendingPackets list
