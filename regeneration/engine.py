@@ -36,7 +36,7 @@ class board_engine:
         BOARD_SIZE_Z = 20 # just an arbitrary number I set, may have to be higher. (Smaller than the others since we have a *flat* worm, duh
         
         # contains the address of the agent in the angent list at every point in our coordinate system, or none if no agent lives there
-        self.board = np.full((BOARD_SIZE_X,BOARD_SIZE_Y,BOARD_SIZE_Z), None)
+        self.board = np.full((BOARD_SIZE_X,BOARD_SIZE_Y,BOARD_SIZE_Z), None, dtype='O')
         
         # this is the actual list of cells.
         self.agents = [] 

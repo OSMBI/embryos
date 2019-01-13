@@ -58,7 +58,7 @@ if __name__ == "__main__":
     for i in b.getAllAgents():
       sense(b,i,minvec,toplen,bendprob)
       newPacket(b, i, packetFreq)
-      act(b,i)
+      act(b,i,0)
     noPacks = 0
     for i in b.getAllAgents():
       noPacks = noPacks + len(i.ReceivedPackets)
@@ -75,7 +75,7 @@ if __name__ == "__main__":
             continue
         sense(b,i,minvec,toplen,bendprob)
         newPacket(b, i, packetFreq)
-        act(b,i)
+        act(b,i,0)
     for c in coords:
         if (c[0] + (c[1]+1)/2 - blockwidth/2)**2 <= (widths[c[1]]/2)**2 and (widths[c[1]] % 2 == 1 or (c[0] + (c[1]+1)/2 - blockwidth/2) <= (widths[c[1]]/2)-1):
             if b.getAgentAtPosition(c) != None:

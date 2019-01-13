@@ -1,0 +1,5 @@
+
+27: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 19, 'bendProb': 0.2, 'deathProb': 0.04, 'minBends': 1}
+47: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 1, 'bendProb': 0.2, 'deathProb': 0.04, 'minBends': 3}
+20: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 16, 'bendProb': 0.2, 'deathProb': 0.01, 'minBends': 1}
+46: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 1, 'bendProb': 0.2, 'deathProb': 0.03, 'minBends': 3}
