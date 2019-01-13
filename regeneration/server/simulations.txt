@@ -3,3 +3,9 @@
 47: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 1, 'bendProb': 0.2, 'deathProb': 0.04, 'minBends': 3}
 20: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 16, 'bendProb': 0.2, 'deathProb': 0.01, 'minBends': 1}
 46: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 1, 'bendProb': 0.2, 'deathProb': 0.03, 'minBends': 3}
+39: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 28, 'bendProb': 0.2, 'deathProb': 0.04, 'minBends': 1}
+15: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 10, 'bendProb': 0.2, 'deathProb': 0.04, 'minBends': 1}
+28: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 22, 'bendProb': 0.2, 'deathProb': 0.01, 'minBends': 1}
+29: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 22, 'bendProb': 0.2, 'deathProb': 0.02, 'minBends': 1}
+21: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 16, 'bendProb': 0.2, 'deathProb': 0.02, 'minBends': 1}
+41: {'minTopLen': 1, 'simulResults': [1, 1, 1, 1], 'packetFreq': 31, 'bendProb': 0.2, 'deathProb': 0.02, 'minBends': 1}

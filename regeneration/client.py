@@ -27,7 +27,7 @@ BUFFER_SIZE = 1024
 #layers = 4
 # use this shape and layers for the oldest paper
 shape = [0, 1, 8, 9, 10, 11, 12, 13, 14, 15, 14, 15, 16, 15, 14, 13, 12, 13, 12, 11, 10, 11, 10, 9, 8, 9, 10, 11, 12, 9, 6, 5, 2]
-layers = 1
+layers = 8
 
 blockwidth = max(shape)+1
 blocklength = len(shape)
@@ -36,13 +36,13 @@ blocklength = len(shape)
 numberOfAgents = sum(shape)*layers;
 
 # Amount of cycles until we start adding agent death events (80 in paper)
-precycles = 1
+precycles = 80
 
 # Amount of cycles where celldeath is simulated until the worm is declared to survive (420 in paper)
-livingCycles = 1
+livingCycles = 420
 
 # Amount of simulations done for a single parameter space (8 in paper)
-simulsPerParameterSpace = 4
+simulsPerParameterSpace = 8
 
 # Number of agents for suvival (0.9*numberOfAgents in paper)
 minAgents = 0.9*numberOfAgents

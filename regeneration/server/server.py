@@ -10,8 +10,8 @@ TCP_IP = '127.0.0.1'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 
-JOB_TIMEOUT = 48*3600 # two days for a simulation should be enough
-PRUNE_FREQUENCY = 5 # how often the prune function is executed. Doesnt really have to be big.
+JOB_TIMEOUT = 48*3600 # how much time until a job is pruned (in case it was accepted by a client that is no longer active)
+PRUNE_FREQUENCY = 60 # delay between executions of the prune function.
 
 SIMUL_OUT_FILE = "simulations.txt"
 
