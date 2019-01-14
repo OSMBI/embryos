@@ -15,6 +15,8 @@ PRUNE_FREQUENCY = 60 # delay between executions of the prune function.
 
 SIMUL_OUT_FILE = "simulations.txt"
 
+AMOUNT_OF_SIMULS = 50688
+
 deathProbs = [0.01, 0.02, 0.03, 0.04]
 packetFreqs = [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31]
 minBendss = [1, 3, 5, 7]
@@ -74,7 +76,7 @@ def pruneOldJobs():
 			simulsToDo.append(job.jobId)
 	threading.Timer(PRUNE_FREQUENCY, pruneOldJobs).start()
 
-simulsToDo = range(0, 50)
+simulsToDo = range(0, AMOUNT_OF_SIMULS-1)
 jobs = []
 
 with open(SIMUL_OUT_FILE) as simulEntries:

@@ -17,7 +17,7 @@ import socket
 import json
 from parameterSpace import *
 
-TCP_IP = '127.0.0.1'
+TCP_IP = '88.99.224.205'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 
